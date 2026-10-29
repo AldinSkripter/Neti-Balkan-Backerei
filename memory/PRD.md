@@ -34,3 +34,10 @@ Owner of a small Balkan bakery (NETI Balkan Bäckerei). Non-technical, edits con
 - P1: Opening hours "Jetzt geöffnet" status badge
 - P2: Google Maps embed + reviews section
 - P3: Language switcher (DE/SR/HR)
+
+## VPS / Plesk deployment (Juli 2026)
+- Server: Ubuntu VPS + Plesk, root SSH. Repo (Plesk Git deploy path): `/var/www/vhosts/xn--neti-balkan-bckerei-swb.de/httpdocs`
+- `deploy-vps.sh` prepravljen: auto-detektira domenu/korisnika iz putanje, ne piše vlastiti Nginx (koristi Plesk vhost_nginx.conf `location ^~ /api/` proxy + Apache `FallbackResource /index.html`, doc root -> `httpdocs/frontend/build`), pita admin lozinku interaktivno na serveru, kreira `backend/.env` samo prvi put, systemd `neti-backend` (127.0.0.1:8001), `/usr/local/bin/neti-deploy` + sudoers za Plesk deployment action `sudo /usr/local/bin/neti-deploy`.
+- `backend/requirements-vps.txt`: minimalni paketi (bez emergentintegrations/litellm); backend lokalno testiran u tom venv-u (settings 200, login 200, LOCAL_UPLOAD_STORAGE=true).
+- Uploads na VPS-u: `/var/www/vhosts/<domena>/neti-uploads/`.
+- STATUS: skripta još NIJE izvršena na stvarnom VPS-u — čeka se korisnik (Save to GitHub -> Plesk pull -> bash deploy-vps.sh).
