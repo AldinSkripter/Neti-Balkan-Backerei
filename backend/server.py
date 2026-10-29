@@ -114,7 +114,7 @@ DEFAULT_SETTINGS = {
     "id": "site",
     "logo_storage_path": "",
     "favicon_storage_path": "",
-    "hero_image": "/assets/hero-burek.webp",
+    "hero_image": "/assets/store-dusk.webp",
     "gallery_images": [
         {"src": "/assets/hero-burek.webp", "alt": "Frisch gebackener Burek vor der NETI Balkan Bäckerei"},
         {"src": "/assets/store-terrasse.webp", "alt": "Außenbereich der NETI Balkan Bäckerei am Abend"},
