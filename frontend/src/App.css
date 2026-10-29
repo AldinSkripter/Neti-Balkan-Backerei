@@ -1,0 +1,22 @@
+.marquee-track {
+    animation: marquee-drift 46s linear infinite;
+    will-change: transform;
+}
+
+@keyframes marquee-drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; }
+}
+
+.hero-mask-line {
+    display: block;
+    overflow: hidden;
+}
+
+.hero-mask-line > span {
+    display: block;
+}

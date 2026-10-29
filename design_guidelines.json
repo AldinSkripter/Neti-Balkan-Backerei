@@ -1,0 +1,140 @@
+{
+  "project_title": "NETI Balkan Bäckerei - Premium Editorial Marketing Site & Admin Panel",
+  "archetype": "ORGANIC & SWISS CRAFT HYBRID (Warm Amber Gold, Soft Cream, Deep Espresso Charcoal)",
+  "emotional_tone": "Warm, authentic, artisanal, immaculate clarity, high-trust, welcoming German-Balkan bakery",
+  "typography": {
+    "heading_font": "Playfair Display, Cormorant Garamond, or Outfit (Display Serif / Crafted Warm Sans)",
+    "body_font": "Plus Jakarta Sans, DM Sans, or Inter (Clean, highly legible geometric sans with generous tracking)",
+    "mono_font": "JetBrains Mono (For opening hours badges, admin status tags, contact metrics)",
+    "hierarchy": {
+      "h1_hero": "text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900 leading-[1.1]",
+      "h2_section": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900",
+      "h3_card": "text-xl sm:text-2xl font-semibold tracking-snug text-stone-900",
+      "h4_subheading": "text-lg font-medium text-stone-800",
+      "eyebrow_label": "text-xs uppercase tracking-[0.25em] font-semibold text-amber-700 bg-amber-100/60 px-3 py-1 rounded-full border border-amber-200/50 inline-block",
+      "body_text": "text-base leading-relaxed text-stone-600 font-normal",
+      "small_text": "text-sm text-stone-500 leading-normal"
+    }
+  },
+  "colors": {
+    "base": {
+      "background_cream": "#FDFBF7",
+      "background_card": "#FFFFFF",
+      "background_dark": "#1C1917",
+      "text_main": "#1C1917",
+      "text_muted": "#57534E",
+      "text_light": "#FAFAF9"
+    },
+    "brand_amber_yellow": {
+      "primary": "#EAB308",
+      "primary_hover": "#CA8A04",
+      "accent_gold": "#FACC15",
+      "soft_amber_bg": "#FEF9C3",
+      "amber_border": "#FDE047"
+    },
+    "supporting": {
+      "warm_border": "#E7E5E4",
+      "subtle_shadow": "0 20px 40px -15px rgba(28, 25, 23, 0.07)",
+      "card_hover_shadow": "0 25px 50px -12px rgba(234, 179, 8, 0.15)"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_philosophy": "Generous Spacing (2-3x typical density). Use py-20 lg:py-32 for main home sections to allow natural breathing room.",
+    "bento_grid": {
+      "mode": "MODE A: TETRIS GRID & CATEGORY TILES",
+      "structure": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8",
+      "card_padding": "p-6 lg:p-8"
+    },
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  },
+  "header_and_navigation": {
+    "style": "Sticky / Fixed crystal glass header with backdrop-blur-xl bg-white/85 border-b border-stone-200/60 z-50 transition-all duration-300",
+    "desktop_nav": "Visible brand logo (circular yellow wheat mark) + 4 main links (Unser Sortiment, Über Uns, Galerie, Standorts & Kontakt) + prominent CTA button 'Route planen'",
+    "mobile_nav": "Accessible hamburger drawer with high-contrast text and instant tap actions ('Route planen', 'Jetzt anrufen')",
+    "anti_pattern_prevention": "Never fully transparent header. Must maintain contrast against background scrolling images."
+  },
+  "homepage_sections": [
+    {
+      "id": "header",
+      "description": "Sticky nav with bakery logo, navigation links, and yellow route button"
+    },
+    {
+      "id": "hero",
+      "description": "Kinetic Hero with masked line-by-line headline reveal ('Täglich frischer Burek & Balkan-Spezialitäten in Ihrer Nähe'), warm dusk storefront photo, action buttons 'Unser Sortiment' and 'So finden Sie uns'"
+    },
+    {
+      "id": "editorial_marquee",
+      "description": "Slow organic drift marquee ribbon with low-contrast warm gold background: 'Frisch gebacken · Echter Balkan Burek · Pizza & Burger · Täglich warm serviert · NETI Balkan Bäckerei'"
+    },
+    {
+      "id": "about_intro",
+      "description": "Short, honest intro about NETI Balkan Bäckerei (quality ingredients, freshly prepared daily, warm hospitalty - no fake history claims)"
+    },
+    {
+      "id": "product_categories",
+      "description": "Interactive showcase for 5 confirmed categories: 1. Burek & pite, 2. Pizza, 3. Burger, 4. Brot & Brötchen, 5. Ćevapčići & Grill"
+    },
+    {
+      "id": "photo_gallery",
+      "description": "High-fidelity gallery featuring provided photos (storefront at dusk, spiral burek, bakery interior) with smooth lightbox modal capability"
+    },
+    {
+      "id": "location_and_contact",
+      "description": "Location & opening hours with clickable phone, email, address badge, and prominent Google Maps external link button 'Route planen'"
+    },
+    {
+      "id": "footer",
+      "description": "Deep stone dark footer with Impressum, Datenschutz links, copyright, and admin login quick access"
+    }
+  ],
+  "pages_and_routing": {
+    "homepage": "/",
+    "impressum": "/impressum",
+    "datenschutz": "/datenschutz",
+    "admin_login": "/admin/login",
+    "admin_dashboard": "/admin/dashboard"
+  },
+  "admin_panel_features": {
+    "authentication": "Protected login modal/page with mock or API auth state",
+    "editable_sections": [
+      "Bakery Logo & Favicon URLs / Upload",
+      "Contact Info (Phone, Email, Address, Google Maps link)",
+      "Opening Hours (Montag-Samstag, Sonntag)",
+      "Product Menu & Categories (Add/Edit items, prices, descriptions)",
+      "Impressum Text Editor (Legal notice content)",
+      "Datenschutz Text Editor (Privacy policy content)"
+    ],
+    "ux": "Clean, cardless tabbed admin dashboard with toast notifications upon saving changes"
+  },
+  "motion_and_micro_interactions": {
+    "library": "framer-motion, lenis (for smooth momentum scroll)",
+    "hero_reveal": "Staggered line reveal for hero headline and subtle parallax background scale on scroll",
+    "card_hover": "Hover lift -translate-y-1.5 with glowing warm amber shadow transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease",
+    "buttons": "Hover scale-102 active:scale-98 with clear color feedback"
+  },
+  "image_urls": {
+    "provided_assets": {
+      "logo": "/assets/logo-wheat-yellow.png",
+      "favicon": "/assets/favicon.ico",
+      "storefront_dusk_1": "https://images.unsplash.com/photo-1587241321921-91a834d6d191?auto=format&fit=crop&q=85&w=1200",
+      "storefront_dusk_2": "https://images.unsplash.com/photo-1568254183919-78a4f43a2877?auto=format&fit=crop&q=85&w=1200",
+      "burek_hand": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&q=85&w=1200"
+    },
+    "supporting_categories": {
+      "burek_pite": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&q=85&w=800",
+      "pizza": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=85&w=800",
+      "burger": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=85&w=800",
+      "brot_broetchen": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=85&w=800",
+      "cevapcici_grill": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=85&w=800"
+    }
+  },
+  "data_testid_convention": "All interactive elements (buttons, inputs, links, tabs, admin save buttons, modals) MUST include explicit data-testid attributes (e.g., data-testid=\"hero-route-button\", data-testid=\"admin-login-submit\", data-testid=\"nav-impressum-link\").",
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Ensure all text is written in standard, natural, error-free German.",
+    "No fake tradition/history claims (e.g., avoid 'Seit 1890'). Focus on daily fresh quality, Balkan recipes, and warm hospitality.",
+    "Do NOT add third-party trackers, cookie banners, newsletter popups, embedded webshop checkout, or external map widgets.",
+    "Provide full legal compliance pages for Impressum and Datenschutz in proper German legal format.",
+    "Include full dynamic editing in the Owner Admin panel so edits persist to local storage / API state.",
+    "Always apply data-testid to every clickable or editable element."
+  ]
+}
