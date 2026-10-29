@@ -422,6 +422,9 @@ async def startup():
         doc["updated_at"] = datetime.now(timezone.utc).isoformat()
         await db.settings.insert_one(doc)
         logger.info("Default settings seeded")
+    if LOCAL_STORAGE_ENABLED:
+        logger.info(f"Local upload storage: {LOCAL_UPLOAD_DIR}")
+        return
     try:
         init_storage()
         logger.info("Object storage initialized")

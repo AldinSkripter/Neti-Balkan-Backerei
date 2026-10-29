@@ -39,12 +39,22 @@ SYS_USER="$(stat -c %U "$APP_DIR")"
 PLESK_CONF_DIR="/var/www/vhosts/system/$DOMAIN/conf"
 [[ -d "$PLESK_CONF_DIR" ]] || fail "Plesk config folder ne postoji: $PLESK_CONF_DIR"
 
-BACKEND_PORT=8001
 DB_NAME="neti_balkan"
 SERVICE="neti-backend"
 
+# Port: zapamćen u backend/.env (BACKEND_PORT), inače prvi slobodan od 8001 naviše
+systemctl stop $SERVICE 2>/dev/null || true
+BACKEND_PORT="$(grep -oP '^BACKEND_PORT="?\K[0-9]+' "$APP_DIR/backend/.env" 2>/dev/null || true)"
+if [[ -z "$BACKEND_PORT" ]]; then
+  BACKEND_PORT=8001
+  while ss -ltn "( sport = :$BACKEND_PORT )" | grep -q LISTEN; do BACKEND_PORT=$((BACKEND_PORT+1)); done
+fi
+if ss -ltn "( sport = :$BACKEND_PORT )" | grep -q LISTEN; then
+  fail "Port $BACKEND_PORT je zauzet drugim programom. Promijenite BACKEND_PORT u $APP_DIR/backend/.env i ponovite."
+fi
+
 log "Projekt: $APP_DIR"
-log "Domena:  $DOMAIN  | Plesk korisnik: $SYS_USER"
+log "Domena:  $DOMAIN  | Plesk korisnik: $SYS_USER | Backend port: $BACKEND_PORT"
 
 # --------------------------------------------------------------------------
 # 1. Sistemski paketi
@@ -105,11 +115,13 @@ ADMIN_EMAIL="$ADMIN_EMAIL"
 ADMIN_PASSWORD="$ADMIN_PASSWORD"
 LOCAL_UPLOAD_STORAGE="true"
 LOCAL_UPLOAD_DIR="/var/www/vhosts/$DOMAIN/neti-uploads"
+BACKEND_PORT="$BACKEND_PORT"
 EOF
   chmod 600 .env
   log "backend/.env kreiran."
 else
   log "backend/.env već postoji — ne diram."
+  grep -q '^BACKEND_PORT=' .env || echo "BACKEND_PORT=\"$BACKEND_PORT\"" >> .env
 fi
 mkdir -p "/var/www/vhosts/$DOMAIN/neti-uploads"
 
