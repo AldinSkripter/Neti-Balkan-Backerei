@@ -24,6 +24,11 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+LOCAL_STORAGE_ENABLED = os.environ.get("LOCAL_UPLOAD_STORAGE", "false").lower() == "true"
+LOCAL_UPLOAD_DIR = Path(os.environ.get("LOCAL_UPLOAD_DIR", ROOT_DIR / "uploads"))
+if LOCAL_STORAGE_ENABLED:
+    LOCAL_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
@@ -117,7 +122,16 @@ DEFAULT_SETTINGS = {
     "hero_image": "/assets/store-dusk.webp",
     "gallery_images": [
         {"src": "/assets/hero-burek.webp", "alt": "Frisch gebackener Burek vor der NETI Balkan Bäckerei"},
-        {"src": "/assets/store-terrasse.webp", "alt": "Außenbereich der NETI Balkan Bäckerei am Abend"},
+        {"src": "/assets/cevapcici-tanjur.webp", "alt": "Ćevapčići vom Grill mit Ajvar und frischem Salat"},
+        {"src": "/assets/vitrina-simit.webp", "alt": "Frische Backwaren und Simits in der Verkaufstheke"},
+        {"src": "/assets/tijesto-priprema.webp", "alt": "Teigzubereitung für Lepinje in unserer Backstube"},
+        {"src": "/assets/burek-daska.webp", "alt": "Frisch gebackener Burek auf dem Servierbrett"},
+        {"src": "/assets/vitrina-lepinje.webp", "alt": "Frische Lepinje und Backwaren in der Verkaufstheke"},
+        {"src": "/assets/vitrina-kolaci.webp", "alt": "Buhtle, Strudel und süße Stücke in der Vitrine"},
+        {"src": "/assets/burgeri-pite.webp", "alt": "Burger mit Sesambrötchen und frische Pite in der Theke"},
+        {"src": "/assets/kolaci-kokos.webp", "alt": "Kokos-Röllchen mit Schokoladenfüllung in der Vitrine"},
+        {"src": "/assets/kola-pistacije.webp", "alt": "Süße Törtchen mit Pistazien aus unserer Vitrine"},
+        {"src": "/assets/lepinje-pecnica.webp", "alt": "Frisch gebackene Lepinje direkt aus dem Ofen"},
         {"src": "/assets/store-dusk.webp", "alt": "Beleuchteter Eingang der NETI Balkan Bäckerei"},
     ],
     "contact": {
@@ -137,13 +151,13 @@ DEFAULT_SETTINGS = {
             "id": "burek-pite",
             "name": "Burek & Pite",
             "tagline": "Knusprige Teigtaschen mit herzhafter Füllung",
-            "image": "/assets/hero-burek.webp",
+            "image": "/assets/burek-daska.webp",
             "items": [],
         },
-        {"id": "pizza", "name": "Pizza", "tagline": "Frisch aus dem Ofen", "image": "/assets/store-dusk.webp", "items": []},
-        {"id": "burger", "name": "Burger", "tagline": "Saftig und reichhaltig belegt", "image": "/assets/store-terrasse.webp", "items": []},
-        {"id": "brot-broetchen", "name": "Brot & Brötchen", "tagline": "Täglich frisch gebacken", "image": "/assets/hero-burek.webp", "items": []},
-        {"id": "cevapcici-grill", "name": "Ćevapčići & Grill", "tagline": "Vom Grill, direkt auf den Teller", "image": "/assets/store-terrasse.webp", "items": []},
+        {"id": "pizza", "name": "Pizza", "tagline": "Frisch aus dem Ofen", "image": "/assets/vitrina-kolaci.webp", "items": []},
+        {"id": "burger", "name": "Burger", "tagline": "Saftig und reichhaltig belegt", "image": "/assets/burgeri-pite.webp", "items": []},
+        {"id": "brot-broetchen", "name": "Brot & Brötchen", "tagline": "Täglich frisch gebacken", "image": "/assets/vitrina-simit.webp", "items": []},
+        {"id": "cevapcici-grill", "name": "Ćevapčići & Grill", "tagline": "Vom Grill, direkt auf den Teller", "image": "/assets/cevapcici-tanjur.webp", "items": []},
     ],
     "about_text": (
         "Die NETI Balkan Bäckerei bringt die Aromen des Balkans in Ihre Nähe: knuspriger Burek, "
@@ -314,6 +328,14 @@ async def me(request: Request):
 ALLOWED_TYPES = {"image/png", "image/jpeg", "image/webp", "image/x-icon", "image/vnd.microsoft.icon", "image/svg+xml"}
 
 
+def save_local_upload(storage_path: str, data: bytes) -> None:
+    # Self-hosting mode (own VPS, LOCAL_UPLOAD_STORAGE=true): persist uploads on the server's disk.
+    # In Emergent deployments this path is never used (object storage is used instead).
+    dest = LOCAL_UPLOAD_DIR / storage_path
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+
+
 @api_router.post("/upload")
 async def upload(request: Request, kind: str = "image", file: UploadFile = File(...)):
     await get_current_user(request)
@@ -326,13 +348,17 @@ async def upload(request: Request, kind: str = "image", file: UploadFile = File(
     if len(data) > 5 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Datei ist größer als 5 MB")
     ext = (file.filename.rsplit(".", 1)[-1] if file.filename and "." in file.filename else "png").lower()
-    path = f"{APP_NAME}/uploads/{kind}/{uuid.uuid4()}.{ext}"
-    try:
-        result = put_object(path, data, content_type)
-    except Exception as e:
-        logger.error(f"Storage upload failed: {e}")
-        raise HTTPException(status_code=502, detail="Upload fehlgeschlagen. Bitte erneut versuchen.")
-    storage_path = result["path"]
+    if LOCAL_STORAGE_ENABLED:
+        storage_path = f"local/{kind}/{uuid.uuid4()}.{ext}"
+        save_local_upload(storage_path, data)
+    else:
+        path = f"{APP_NAME}/uploads/{kind}/{uuid.uuid4()}.{ext}"
+        try:
+            result = put_object(path, data, content_type)
+        except Exception as e:
+            logger.error(f"Storage upload failed: {e}")
+            raise HTTPException(status_code=502, detail="Upload fehlgeschlagen. Bitte erneut versuchen.")
+        storage_path = result["path"]
     if kind in ("logo", "favicon"):
         await db.settings.update_one({"id": "site"}, {"$set": {f"{kind}_storage_path": storage_path}}, upsert=True)
     return {"storage_path": storage_path, "url": f"/api/files/{storage_path}"}
@@ -340,11 +366,26 @@ async def upload(request: Request, kind: str = "image", file: UploadFile = File(
 
 @api_router.get("/files/{path:path}")
 async def download_file(path: str):
+    if path.startswith("local/"):
+        dest = LOCAL_UPLOAD_DIR / path
+        if not dest.is_file():
+            raise HTTPException(status_code=404, detail="Datei nicht gefunden")
+        return RawResponse(
+            content=dest.read_bytes(),
+            media_type=MIME_TYPES.get(dest.suffix.lstrip("."), "application/octet-stream"),
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
     try:
         data, content_type = get_object(path)
     except Exception:
         raise HTTPException(status_code=404, detail="Datei nicht gefunden")
     return RawResponse(content=data, media_type=content_type, headers={"Cache-Control": "public, max-age=86400"})
+
+
+MIME_TYPES = {
+    "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
+    "webp": "image/webp", "svg": "image/svg+xml", "ico": "image/x-icon",
+}
 
 
 app.include_router(api_router)
